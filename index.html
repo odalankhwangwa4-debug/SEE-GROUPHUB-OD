@@ -1,19 +1,529 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SEE GroupHub — MUST</title>
-<style>
-body{font-family:Arial,sans-serif;margin:0;background:#f5f7fb;color:#172033}
-main{max-width:900px;margin:60px auto;padding:30px;background:white;border-radius:18px;box-shadow:0 8px 30px #0001}
-h1{margin-top:0}.ok{padding:14px;border-radius:10px;background:#eef8f0}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SEE GroupHub — MUST</title>
+  <meta name="description" content="Sustainable Energy Engineering student grouping platform.">
+  <style>
+    :root{
+      --bg:#f5f7fb;--card:#fff;--ink:#14213d;--muted:#6b7280;--line:#e5e7eb;
+      --brand:#0b6b4f;--brand2:#084c3a;--soft:#e8f5ef;--danger:#b42318;
+      --shadow:0 12px 35px rgba(15,23,42,.08);--radius:18px
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink)}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .hidden{display:none!important}
+    .center{min-height:100vh;display:grid;place-items:center;padding:24px}
+    .auth{width:min(1040px,100%);display:grid;grid-template-columns:1.05fr .95fr;background:var(--card);border-radius:28px;overflow:hidden;box-shadow:var(--shadow)}
+    .hero{padding:48px;background:linear-gradient(145deg,var(--brand2),var(--brand));color:#fff}
+    .hero h1{font-size:46px;line-height:1;margin:18px 0 14px}
+    .hero p{color:#d9f4e9;line-height:1.6}
+    .hero ul{padding-left:20px;line-height:2}
+    .authbox{padding:38px}
+    .tabs{display:flex;background:#f3f4f6;border-radius:12px;padding:4px;margin-bottom:24px}
+    .tabs button{flex:1;border:0;background:transparent;padding:11px;border-radius:9px;color:var(--muted)}
+    .tabs button.active{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+    label{display:block;font-weight:700;font-size:13px;margin:14px 0 7px}
+    input,select,textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:11px;outline:none;background:#fff}
+    input:focus,select:focus,textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(11,107,79,.1)}
+    textarea{min-height:120px;resize:vertical}
+    .btn{border:0;border-radius:11px;padding:12px 16px;font-weight:800}
+    .primary{background:var(--brand);color:#fff}.primary:hover{background:var(--brand2)}
+    .secondary{background:#eef2f7;color:var(--ink)}
+    .danger{background:#fee4e2;color:var(--danger)}
+    .full{width:100%;margin-top:18px}
+    .small{font-size:12px;color:var(--muted)}
+    .notice{padding:12px 14px;border-radius:12px;background:var(--soft);color:var(--brand2);font-size:13px;margin:14px 0}
+    .error{padding:12px 14px;border-radius:12px;background:#fff0ef;color:var(--danger);font-size:13px;margin:14px 0}
+    .app{display:none;min-height:100vh}
+    .app.active{display:block}
+    .topbar{height:68px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:5}
+    .brand{font-weight:900;letter-spacing:.5px}.brand span{color:var(--brand)}
+    .userchip{display:flex;align-items:center;gap:10px}.avatar{width:36px;height:36px;border-radius:50%;background:var(--soft);display:grid;place-items:center;color:var(--brand);font-weight:900}
+    .layout{display:grid;grid-template-columns:235px 1fr;min-height:calc(100vh - 68px)}
+    .side{background:#fff;border-right:1px solid var(--line);padding:18px 12px}
+    .navbtn{width:100%;border:0;background:transparent;text-align:left;padding:12px 14px;border-radius:10px;margin:3px 0;color:#475569;font-weight:700}
+    .navbtn.active,.navbtn:hover{background:var(--soft);color:var(--brand)}
+    main{padding:30px;max-width:1400px;width:100%;margin:auto}
+    .pagehead{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:24px}
+    .pagehead h2{margin:0;font-size:28px}.pagehead p{margin:6px 0 0;color:var(--muted)}
+    .grid{display:grid;gap:18px}.stats{grid-template-columns:repeat(4,1fr)}
+    .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:0 5px 18px rgba(15,23,42,.04)}
+    .stat .label{color:var(--muted);font-size:13px;font-weight:700}.stat .value{font-size:32px;font-weight:900;margin-top:6px}
+    .two{grid-template-columns:1fr 1fr}.three{grid-template-columns:repeat(3,1fr)}
+    table{width:100%;border-collapse:collapse}.tablewrap{overflow:auto}
+    th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--line);font-size:13px}
+    th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+    .pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#eef2f7;font-size:11px;font-weight:800}
+    .pill.f{background:#f7e8f4;color:#8b2d74}.pill.m{background:#e7f0ff;color:#2359a8}.pill.ok{background:var(--soft);color:var(--brand)}
+    .groupgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:18px}
+    .groupcard h3{margin:0 0 4px}.member{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+    .member:last-child{border-bottom:0}.member small{display:block;color:var(--muted);margin-top:2px}
+    .empty{padding:35px;text-align:center;color:var(--muted)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .modal{position:fixed;inset:0;background:rgba(15,23,42,.48);display:grid;place-items:center;padding:20px;z-index:20}
+    .modalbox{width:min(520px,100%);background:#fff;border-radius:20px;padding:24px}
+    .modalhead{display:flex;justify-content:space-between;align-items:center}.close{border:0;background:#eef2f7;border-radius:9px;padding:8px 10px}
+    .announcement{padding:16px 0;border-bottom:1px solid var(--line)}.announcement:last-child{border:0}
+    .announcement h3{margin:0 0 5px}.announcement p{white-space:pre-wrap;color:#475569;line-height:1.55}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.toolbar input{max-width:320px}
+    .toast{position:fixed;right:20px;bottom:20px;background:#14213d;color:#fff;padding:13px 16px;border-radius:12px;box-shadow:var(--shadow);z-index:30}
+    .footer-note{margin-top:24px;color:var(--muted);font-size:12px}
+    @media(max-width:900px){.auth{grid-template-columns:1fr}.hero{display:none}.layout{grid-template-columns:1fr}.side{display:flex;overflow:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px}.navbtn{white-space:nowrap;width:auto}.stats{grid-template-columns:1fr 1fr}.two,.three{grid-template-columns:1fr}}
+    @media(max-width:560px){.topbar{padding:0 15px}.userchip .username{display:none}main{padding:18px}.stats{grid-template-columns:1fr 1fr}.authbox{padding:24px}.pagehead{align-items:flex-start;flex-direction:column}}
+  </style>
 </head>
-<body><main>
-<h1>SEE GroupHub</h1>
-<p>Sustainable Energy Engineering • MUST</p>
-<div class="ok">The SEE GroupHub server is online and ready.</div>
-<p>Health check: <a href="/health">/health</a></p>
-</main></body>
+<body>
+<div id="authScreen" class="center">
+  <section class="auth">
+    <div class="hero">
+      <div class="brand">SEE <span style="color:#bdf3dd">GROUPHUB</span></div>
+      <h1>Better groups.<br>Better learning.</h1>
+      <p>A secure student platform for Sustainable Energy Engineering students to register, receive balanced groups and stay connected.</p>
+      <ul>
+        <li>Use your own email address</li>
+        <li>Verified student accounts</li>
+        <li>6 students per complete group</li>
+        <li>2 Female + 4 Male allocation</li>
+        <li>Admin-controlled group locking</li>
+      </ul>
+    </div>
+    <div class="authbox">
+      <div class="tabs">
+        <button id="studentTab" class="active" onclick="showAuth('student')">Student</button>
+        <button id="adminTab" onclick="showAuth('admin')">Administrator</button>
+      </div>
+
+      <div id="studentAuth">
+        <h2 id="studentAuthTitle">Create your account</h2>
+        <p class="small">Use Gmail, Outlook or another email you can access.</p>
+        <div id="authMsg"></div>
+        <form id="studentForm">
+          <div id="signupFields">
+            <label>Full name</label><input id="fullName" placeholder="e.g. John Banda" required>
+            <label>Gender</label>
+            <select id="gender" required><option value="">Select gender</option><option>Female</option><option>Male</option></select>
+            <label>Year of study</label>
+            <select id="year" required><option value="">Select year</option><option>Year 1</option><option>Year 2</option><option>Year 3</option><option>Year 4</option><option>Other</option></select>
+          </div>
+          <label>Email</label><input id="email" type="email" placeholder="you@example.com" required>
+          <label>Password</label><input id="password" type="password" minlength="8" placeholder="At least 8 characters" required>
+          <button class="btn primary full" id="studentSubmit">Create account</button>
+        </form>
+        <p class="small" style="text-align:center;margin-top:16px"><span id="toggleText">Already registered?</span> <button id="toggleMode" style="border:0;background:none;color:var(--brand);font-weight:800" onclick="toggleStudentMode()">Sign in</button></p>
+        <div class="notice">Email confirmation may be required before you can access the platform.</div>
+      </div>
+
+      <div id="adminAuth" class="hidden">
+        <h2>Administrator sign in</h2>
+        <p class="small">Only the approved three administrators should use this area.</p>
+        <div id="adminMsg"></div>
+        <form id="adminForm">
+          <label>Email</label><input id="adminEmail" type="email" required>
+          <label>Password</label><input id="adminPassword" type="password" required>
+          <button class="btn primary full">Sign in securely</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="studentApp" class="app">
+  <header class="topbar">
+    <div class="brand">SEE <span>GROUPHUB</span></div>
+    <div class="userchip"><div class="avatar" id="studentAvatar">S</div><div class="username" id="studentUserName"></div><button class="btn secondary" onclick="logout()">Log out</button></div>
+  </header>
+  <div class="layout">
+    <aside class="side">
+      <button class="navbtn active" data-page="studentDashboard" onclick="studentPage('studentDashboard')">Dashboard</button>
+      <button class="navbtn" data-page="myGroup" onclick="studentPage('myGroup')">My Group</button>
+      <button class="navbtn" data-page="studentAnnouncements" onclick="studentPage('studentAnnouncements')">Announcements</button>
+      <button class="navbtn" data-page="studentProfile" onclick="studentPage('studentProfile')">My Profile</button>
+    </aside>
+    <main>
+      <section id="studentDashboard" class="studentPage">
+        <div class="pagehead"><div><h2>Welcome, <span id="welcomeName"></span> 👋</h2><p>Sustainable Energy Engineering student portal.</p></div></div>
+        <div class="grid stats">
+          <div class="card stat"><div class="label">Your group</div><div class="value" id="studentGroupNumber">—</div></div>
+          <div class="card stat"><div class="label">Group members</div><div class="value" id="studentGroupSize">—</div></div>
+          <div class="card stat"><div class="label">Year</div><div class="value" style="font-size:22px" id="studentYear">—</div></div>
+          <div class="card stat"><div class="label">Account</div><div class="value" style="font-size:22px">Verified</div></div>
+        </div>
+        <div class="grid two" style="margin-top:18px">
+          <div class="card"><h3>Quick note</h3><p style="color:var(--muted);line-height:1.6">Your group is assigned by the administrator team. Once groups are locked, the allocation is treated as final unless the admins make an approved change.</p></div>
+          <div class="card"><h3>Latest announcements</h3><div id="dashAnnouncements"></div></div>
+        </div>
+      </section>
+
+      <section id="myGroup" class="studentPage hidden">
+        <div class="pagehead"><div><h2>My Group</h2><p>Your assigned Sustainable Energy Engineering group.</p></div></div>
+        <div id="myGroupContent"></div>
+      </section>
+
+      <section id="studentAnnouncements" class="studentPage hidden">
+        <div class="pagehead"><div><h2>Announcements</h2><p>Updates from the administrator team.</p></div></div>
+        <div class="card" id="studentAnnouncementList"></div>
+      </section>
+
+      <section id="studentProfile" class="studentPage hidden">
+        <div class="pagehead"><div><h2>My Profile</h2><p>Your account information.</p></div></div>
+        <div class="card" id="profileCard"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div id="adminApp" class="app">
+  <header class="topbar">
+    <div class="brand">SEE <span>GROUPHUB</span> <span style="font-size:11px;color:var(--muted)">ADMIN</span></div>
+    <div class="userchip"><div class="avatar" id="adminAvatar">A</div><div class="username" id="adminUserName"></div><button class="btn secondary" onclick="logout()">Log out</button></div>
+  </header>
+  <div class="layout">
+    <aside class="side">
+      <button class="navbtn active" data-page="adminDashboard" onclick="adminPage('adminDashboard')">Dashboard</button>
+      <button class="navbtn" data-page="adminStudents" onclick="adminPage('adminStudents')">Students</button>
+      <button class="navbtn" data-page="adminGroups" onclick="adminPage('adminGroups')">Groups</button>
+      <button class="navbtn" data-page="adminAnnouncements" onclick="adminPage('adminAnnouncements')">Announcements</button>
+      <button class="navbtn" data-page="adminAudit" onclick="adminPage('adminAudit')">Audit Log</button>
+      <button class="navbtn" data-page="adminSettings" onclick="adminPage('adminSettings')">Settings</button>
+    </aside>
+    <main>
+      <section id="adminDashboard" class="adminPage">
+        <div class="pagehead"><div><h2>Admin Dashboard</h2><p>Manage students and group allocation.</p></div><div class="actions"><button class="btn primary" onclick="generateGroups()">Generate balanced groups</button><button class="btn secondary" onclick="lockGroups()">Lock groups</button></div></div>
+        <div class="grid stats">
+          <div class="card stat"><div class="label">Students</div><div class="value" id="statStudents">0</div></div>
+          <div class="card stat"><div class="label">Female students</div><div class="value" id="statFemale">0</div></div>
+          <div class="card stat"><div class="label">Groups</div><div class="value" id="statGroups">0</div></div>
+          <div class="card stat"><div class="label">Unassigned</div><div class="value" id="statUnassigned">0</div></div>
+        </div>
+        <div class="grid two" style="margin-top:18px">
+          <div class="card"><h3>Allocation rule</h3><p style="line-height:1.6;color:var(--muted)">Every complete group contains exactly <b>6 students: 2 Female + 4 Male</b>. If the class numbers cannot produce another complete group, the remaining students are shown as unassigned.</p></div>
+          <div class="card"><h3>Admin team</h3><p style="line-height:1.6;color:var(--muted)">The backend supports three administrator accounts. Use individual accounts so every important action can be audited.</p></div>
+        </div>
+      </section>
+
+      <section id="adminStudents" class="adminPage hidden">
+        <div class="pagehead"><div><h2>Students</h2><p>View and manage registered students.</p></div><div class="toolbar"><input id="studentSearch" placeholder="Search name or email..." oninput="renderStudents()"></div></div>
+        <div class="card tablewrap"><table><thead><tr><th>Name</th><th>Email</th><th>Gender</th><th>Year</th><th>Status</th><th>Action</th></tr></thead><tbody id="studentTable"></tbody></table></div>
+      </section>
+
+      <section id="adminGroups" class="adminPage hidden">
+        <div class="pagehead"><div><h2>Groups</h2><p>Review the current allocation before locking it.</p></div><div class="actions"><button class="btn primary" onclick="generateGroups()">Regenerate</button><button class="btn secondary" onclick="lockGroups()">Lock all groups</button><button class="btn danger" onclick="clearGroups()">Clear</button></div></div>
+        <div id="adminGroupGrid" class="groupgrid"></div>
+      </section>
+
+      <section id="adminAnnouncements" class="adminPage hidden">
+        <div class="pagehead"><div><h2>Announcements</h2><p>Publish updates to all students.</p></div><button class="btn primary" onclick="openAnnouncementModal()">New announcement</button></div>
+        <div class="card" id="adminAnnouncementList"></div>
+      </section>
+
+      <section id="adminAudit" class="adminPage hidden">
+        <div class="pagehead"><div><h2>Audit Log</h2><p>Recent administrative actions.</p></div></div>
+        <div class="card tablewrap"><table><thead><tr><th>Time</th><th>Admin</th><th>Action</th><th>Details</th></tr></thead><tbody id="auditTable"></tbody></table></div>
+      </section>
+
+      <section id="adminSettings" class="adminPage hidden">
+        <div class="pagehead"><div><h2>Settings</h2><p>Platform configuration and deployment notes.</p></div></div>
+        <div class="grid two">
+          <div class="card"><h3>Account policy</h3><ul style="line-height:1.9;color:var(--muted)"><li>Personal email addresses are accepted.</li><li>Email confirmation should remain enabled.</li><li>Never share administrator passwords.</li><li>Only three approved admins should receive admin roles.</li></ul></div>
+          <div class="card"><h3>Data & privacy</h3><ul style="line-height:1.9;color:var(--muted)"><li>Collect only necessary student information.</li><li>Keep the service role key on the server.</li><li>Use HTTPS in production.</li><li>Obtain appropriate institutional approval before official deployment.</li></ul></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div id="modal" class="modal hidden">
+  <div class="modalbox">
+    <div class="modalhead"><h3 id="modalTitle">New announcement</h3><button class="close" onclick="closeModal()">✕</button></div>
+    <form id="announcementForm">
+      <label>Title</label><input id="announcementTitle" required>
+      <label>Message</label><textarea id="announcementBody" required></textarea>
+      <button class="btn primary full">Publish announcement</button>
+    </form>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+let sb = null;
+let session = null;
+let me = null;
+let studentLoginMode = false;
+let studentsCache = [];
+let groupsCache = [];
+let announcementsCache = [];
+
+async function api(path, options={}) {
+  const headers = {...(options.headers||{}), "Content-Type":"application/json"};
+  if (session?.access_token) headers.Authorization = "Bearer " + session.access_token;
+  const res = await fetch(path, {...options, headers});
+  const data = await res.json().catch(()=>({}));
+  if (!res.ok) throw new Error(data.error || "Request failed.");
+  return data;
+}
+
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.remove("hidden");
+  clearTimeout(window.toastTimer); window.toastTimer=setTimeout(()=>el.classList.add("hidden"),3500);
+}
+
+function setMsg(id,msg,error=false){
+  document.getElementById(id).innerHTML = msg ? `<div class="${error?'error':'notice'}">${escapeHtml(msg)}</div>` : "";
+}
+
+function escapeHtml(v){
+  return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+}
+
+function showAuth(which){
+  const student = which==="student";
+  document.getElementById("studentAuth").classList.toggle("hidden",!student);
+  document.getElementById("adminAuth").classList.toggle("hidden",student);
+  document.getElementById("studentTab").classList.toggle("active",student);
+  document.getElementById("adminTab").classList.toggle("active",!student);
+}
+
+function toggleStudentMode(){
+  studentLoginMode=!studentLoginMode;
+  document.getElementById("signupFields").classList.toggle("hidden",studentLoginMode);
+  document.getElementById("studentAuthTitle").textContent=studentLoginMode?"Student sign in":"Create your account";
+  document.getElementById("studentSubmit").textContent=studentLoginMode?"Sign in":"Create account";
+  document.getElementById("toggleText").textContent=studentLoginMode?"New here?":"Already registered?";
+  document.getElementById("toggleMode").textContent=studentLoginMode?"Create account":"Sign in";
+  setMsg("authMsg","");
+}
+
+async function init(){
+  try{
+    const cfg=await fetch("/api/config").then(r=>r.json());
+    if(!cfg.supabaseUrl || !cfg.supabaseAnonKey){
+      setMsg("authMsg","Server is not configured yet. Add Supabase values to .env and restart.",true);
+      return;
+    }
+    const {createClient}=supabase;
+    sb=createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
+    const stored=localStorage.getItem("see_session");
+    if(stored){
+      const parsed=JSON.parse(stored);
+      const result=await sb.auth.setSession(parsed);
+      if(!result.error && result.data.session){session=result.data.session; await enterApp();}
+    }
+  }catch(e){console.error(e)}
+}
+
+async function enterApp(){
+  try{
+    const data=await api("/api/me");
+    me=data.profile;
+    if(me.role==="student") await showStudentApp();
+    else if(["admin","super_admin"].includes(me.role)) await showAdminApp();
+    else throw new Error("Your account does not have a permitted role.");
+  }catch(e){
+    localStorage.removeItem("see_session"); session=null;
+    setMsg("authMsg",e.message,true);
+  }
+}
+
+document.getElementById("studentForm").addEventListener("submit",async e=>{
+  e.preventDefault(); setMsg("authMsg","");
+  try{
+    if(studentLoginMode){
+      const {data,error}=await sb.auth.signInWithPassword({email:email.value.trim(),password:password.value});
+      if(error) throw error;
+      session=data.session; localStorage.setItem("see_session",JSON.stringify(session)); await enterApp();
+    }else{
+      const {data,error}=await sb.auth.signUp({
+        email:email.value.trim(),password:password.value,
+        options:{data:{
+          full_name:fullName.value.trim(),
+          gender:gender.value,
+          year_of_study:year.value
+        }}
+      });
+      if(error) throw error;
+      if(data.session){
+        session=data.session; localStorage.setItem("see_session",JSON.stringify(session)); await enterApp();
+      }else{
+        setMsg("authMsg","Account created. Check your email and click the verification link, then sign in.");
+        toggleStudentMode();
+      }
+    }
+  }catch(err){setMsg("authMsg",err.message,true)}
+});
+
+document.getElementById("adminForm").addEventListener("submit",async e=>{
+  e.preventDefault(); setMsg("adminMsg","");
+  try{
+    const {data,error}=await sb.auth.signInWithPassword({email:adminEmail.value.trim(),password:adminPassword.value});
+    if(error) throw error;
+    session=data.session; localStorage.setItem("see_session",JSON.stringify(session)); await enterApp();
+  }catch(err){setMsg("adminMsg",err.message,true)}
+});
+
+async function logout(){
+  try{if(sb) await sb.auth.signOut()}catch(e){}
+  localStorage.removeItem("see_session"); session=null; me=null;
+  document.getElementById("studentApp").classList.remove("active");
+  document.getElementById("adminApp").classList.remove("active");
+  document.getElementById("authScreen").style.display="grid";
+  showAuth("student");
+}
+
+async function showStudentApp(){
+  document.getElementById("authScreen").style.display="none";
+  document.getElementById("studentApp").classList.add("active");
+  document.getElementById("studentUserName").textContent=me.full_name;
+  document.getElementById("studentAvatar").textContent=(me.full_name||"S").charAt(0).toUpperCase();
+  document.getElementById("welcomeName").textContent=me.full_name.split(" ")[0];
+  document.getElementById("studentYear").textContent=me.year_of_study;
+  document.getElementById("profileCard").innerHTML=`
+    <div class="grid two">
+      <div><div class="small">Full name</div><strong>${escapeHtml(me.full_name)}</strong></div>
+      <div><div class="small">Email</div><strong>${escapeHtml(me.email)}</strong></div>
+      <div><div class="small">Gender</div><strong>${escapeHtml(me.gender)}</strong></div>
+      <div><div class="small">Year of study</div><strong>${escapeHtml(me.year_of_study)}</strong></div>
+    </div>`;
+  await refreshStudentData();
+}
+
+async function refreshStudentData(){
+  const [g,a]=await Promise.all([api("/api/my-group"),api("/api/announcements")]);
+  announcementsCache=a.announcements||[];
+  const group=g.group;
+  document.getElementById("studentGroupNumber").textContent=group?String(group.group_number).padStart(2,"0"):"—";
+  document.getElementById("studentGroupSize").textContent=group?.group_members?.length??"—";
+  renderStudentGroup(group);
+  renderAnnouncements("studentAnnouncementList",announcementsCache);
+  renderAnnouncements("dashAnnouncements",announcementsCache.slice(0,3));
+}
+
+function renderStudentGroup(group){
+  const el=document.getElementById("myGroupContent");
+  if(!group){el.innerHTML='<div class="card empty"><h3>No group assigned yet</h3><p>The administrators have not generated a group for you, or you are currently unassigned.</p></div>';return}
+  el.innerHTML=`<div class="card">
+    <div class="pagehead"><div><h2>${escapeHtml(group.name)}</h2><p>Status: <span class="pill ${group.status==="locked"?"ok":""}">${escapeHtml(group.status)}</span></p></div></div>
+    <div class="groupgrid">${group.group_members.map(m=>`<div class="card">
+      <div class="member" style="border:0;padding:0"><div><strong>${escapeHtml(m.profiles.full_name)}</strong><small>${escapeHtml(m.profiles.email)} · ${escapeHtml(m.profiles.year_of_study)}</small></div><span class="pill ${m.profiles.gender==="Female"?"f":"m"}">${m.profiles.gender}</span></div>
+    </div>`).join("")}</div>
+  </div>`;
+}
+
+function renderAnnouncements(target,list){
+  const el=document.getElementById(target);
+  if(!list.length){el.innerHTML='<div class="empty">No announcements yet.</div>';return}
+  el.innerHTML=list.map(a=>`<article class="announcement"><h3>${escapeHtml(a.title)}</h3><div class="small">${new Date(a.created_at).toLocaleString()}</div><p>${escapeHtml(a.body)}</p></article>`).join("");
+}
+
+function studentPage(id){
+  document.querySelectorAll(".studentPage").forEach(x=>x.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  document.querySelectorAll("#studentApp .navbtn").forEach(x=>x.classList.toggle("active",x.dataset.page===id));
+  if(id==="myGroup" || id==="studentAnnouncements") refreshStudentData();
+}
+
+async function showAdminApp(){
+  document.getElementById("authScreen").style.display="none";
+  document.getElementById("adminApp").classList.add("active");
+  document.getElementById("adminUserName").textContent=me.full_name + " · " + (me.role==="super_admin"?"Super Admin":"Admin");
+  document.getElementById("adminAvatar").textContent=(me.full_name||"A").charAt(0).toUpperCase();
+  await refreshAdmin();
+}
+
+async function refreshAdmin(){
+  const [dash,students,groups,ann]=await Promise.all([
+    api("/api/admin/dashboard"),api("/api/admin/students"),api("/api/admin/groups"),api("/api/announcements")
+  ]);
+  studentsCache=students.students||[]; groupsCache=groups.groups||[]; announcementsCache=ann.announcements||[];
+  document.getElementById("statStudents").textContent=dash.totalStudents;
+  document.getElementById("statFemale").textContent=dash.femaleStudents;
+  document.getElementById("statGroups").textContent=dash.groups;
+  document.getElementById("statUnassigned").textContent=dash.unassignedStudents;
+  renderStudents(); renderAdminGroups(); renderAnnouncements("adminAnnouncementList",announcementsCache);
+}
+
+function renderStudents(){
+  const q=(document.getElementById("studentSearch")?.value||"").toLowerCase();
+  const list=studentsCache.filter(s=>(s.full_name+" "+s.email).toLowerCase().includes(q));
+  document.getElementById("studentTable").innerHTML=list.map(s=>`<tr>
+    <td><strong>${escapeHtml(s.full_name)}</strong></td><td>${escapeHtml(s.email)}</td>
+    <td><span class="pill ${s.gender==="Female"?"f":"m"}">${s.gender}</span></td>
+    <td>${escapeHtml(s.year_of_study)}</td><td><span class="pill ${s.is_active?"ok":""}">${s.is_active?"Active":"Inactive"}</span></td>
+    <td><button class="btn ${s.is_active?"danger":"secondary"}" onclick="${s.is_active?"deactivateStudent":"activateStudent"}('${s.id}')">${s.is_active?"Deactivate":"Activate"}</button></td>
+  </tr>`).join("") || '<tr><td colspan="6" class="empty">No students found.</td></tr>';
+}
+
+function renderAdminGroups(){
+  const el=document.getElementById("adminGroupGrid");
+  if(!groupsCache.length){el.innerHTML='<div class="card empty">No groups generated yet.</div>';return}
+  el.innerHTML=groupsCache.map(g=>`<div class="card groupcard">
+    <div style="display:flex;justify-content:space-between;align-items:center"><div><h3>${escapeHtml(g.name)}</h3><div class="small">${g.group_members?.length||0} members</div></div><span class="pill ${g.status==="locked"?"ok":""}">${g.status}</span></div>
+    <div style="margin-top:12px">${(g.group_members||[]).map(m=>`<div class="member"><div><strong>${escapeHtml(m.profiles.full_name)}</strong><small>${escapeHtml(m.profiles.email)}</small></div><span class="pill ${m.profiles.gender==="Female"?"f":"m"}">${m.profiles.gender}</span></div>`).join("")}</div>
+  </div>`).join("");
+}
+
+async function generateGroups(){
+  if(!confirm("Generate a new balanced allocation? Existing unlocked groups will be replaced.")) return;
+  try{const d=await api("/api/admin/generate-groups",{method:"POST"});showToast(d.result.message||"Groups generated.");await refreshAdmin();adminPage("adminGroups")}catch(e){showToast(e.message)}
+}
+
+async function clearGroups(){
+  if(!confirm("Clear all unlocked groups?")) return;
+  try{await api("/api/admin/clear-groups",{method:"POST"});showToast("Groups cleared.");await refreshAdmin()}catch(e){showToast(e.message)}
+}
+
+async function lockGroups(){
+  if(!confirm("Lock all current groups? This should only be done after reviewing the allocation.")) return;
+  try{const d=await api("/api/admin/lock-groups",{method:"POST"});showToast("Groups locked.");await refreshAdmin()}catch(e){showToast(e.message)}
+}
+
+async function deactivateStudent(id){
+  if(!confirm("Deactivate this student?")) return;
+  try{await api("/api/admin/students/"+id+"/deactivate",{method:"POST"});showToast("Student deactivated.");await refreshAdmin()}catch(e){showToast(e.message)}
+}
+async function activateStudent(id){
+  try{await api("/api/admin/students/"+id+"/activate",{method:"POST"});showToast("Student activated.");await refreshAdmin()}catch(e){showToast(e.message)}
+}
+
+function adminPage(id){
+  document.querySelectorAll(".adminPage").forEach(x=>x.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  document.querySelectorAll("#adminApp .navbtn").forEach(x=>x.classList.toggle("active",x.dataset.page===id));
+  if(id==="adminAudit") loadAudit();
+}
+
+async function loadAudit(){
+  try{
+    const d=await api("/api/admin/audit-logs");
+    document.getElementById("auditTable").innerHTML=(d.logs||[]).map(l=>`<tr>
+      <td>${new Date(l.created_at).toLocaleString()}</td>
+      <td>${escapeHtml(l.profiles?.full_name||"Unknown")}</td>
+      <td>${escapeHtml(l.action)}</td>
+      <td><code>${escapeHtml(JSON.stringify(l.details||{}))}</code></td>
+    </tr>`).join("") || '<tr><td colspan="4" class="empty">No audit entries.</td></tr>';
+  }catch(e){showToast(e.message)}
+}
+
+function openAnnouncementModal(){document.getElementById("modal").classList.remove("hidden")}
+function closeModal(){document.getElementById("modal").classList.add("hidden");document.getElementById("announcementForm").reset()}
+document.getElementById("announcementForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  try{
+    await api("/api/admin/announcements",{method:"POST",body:JSON.stringify({title:announcementTitle.value,body:announcementBody.value})});
+    closeModal();showToast("Announcement published.");await refreshAdmin();
+  }catch(err){showToast(err.message)}
+});
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+...
+init();
+</script>
+</body>
 </html>
