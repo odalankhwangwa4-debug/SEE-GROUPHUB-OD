@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const { createClient } = require("@supabase/supabase-js");
+const WebSocket = require("ws");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -21,13 +22,19 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !SUPABASE_SERVICE_ROLE_KEY) {
 const publicSupabase = createClient(
   SUPABASE_URL || "",
   SUPABASE_ANON_KEY || "",
-  { auth: { autoRefreshToken: false, persistSession: false } }
+  {
+    auth: { autoRefreshToken: false, persistSession: false },
+    realtime: { transport: WebSocket }
+  }
 );
 
 const adminSupabase = createClient(
   SUPABASE_URL || "",
   SUPABASE_SERVICE_ROLE_KEY || "",
-  { auth: { autoRefreshToken: false, persistSession: false } }
+  {
+    auth: { autoRefreshToken: false, persistSession: false },
+    realtime: { transport: WebSocket }
+  }
 );
 
 app.use(express.json({ limit: "1mb" }));
