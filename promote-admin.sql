@@ -1,0 +1,5 @@
+-- Run against your existing Supabase project after users register.
+-- Set one profile to super_admin and two to admin using their UUIDs.
+-- Example:
+-- update public.profiles set role='super_admin' where id='UUID-HERE';
+-- update public.profiles set role='admin' where id='UUID-HERE';

@@ -1,0 +1,15 @@
+UPLOAD INSTRUCTIONS
+
+1. Extract this ZIP.
+2. Upload the CONTENTS of the see-grouphub-v2 folder to the ROOT of your GitHub repository.
+3. package.json and server.js must be visible directly at the repository root.
+4. public/index.html must be inside a public folder.
+5. Do NOT upload .env or any secret key.
+6. Keep your existing Supabase variables in Render.
+
+Render:
+Root Directory: blank
+Build Command: npm install
+Start Command: npm start
+
+This version explicitly binds Express to 0.0.0.0 and Render's PORT and adds /health.

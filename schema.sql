@@ -1,0 +1,2 @@
+-- Keep/use your existing SEE GroupHub Supabase schema here.
+-- The server requires the profiles table used by the existing project.

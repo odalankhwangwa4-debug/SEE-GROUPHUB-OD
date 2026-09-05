@@ -1,0 +1,14 @@
+{
+  "name": "see-grouphub-v2",
+  "version": "2.0.1",
+  "private": true,
+  "description": "SEE GroupHub — MUST student grouping platform",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.8",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0"
+  }
+}
